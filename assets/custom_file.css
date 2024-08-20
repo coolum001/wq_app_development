@@ -1,0 +1,16 @@
+.table-small-y-padding td {
+    padding-bottom: 0.35rem;
+    padding-top: 0.35rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.fs-s {
+    font-size: 0.9rem;
+}
+
+.fs-xs {
+    font-size: 0.8rem;
+}
