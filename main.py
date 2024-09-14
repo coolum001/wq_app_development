@@ -24,4 +24,4 @@ callbacks(app)
 app.layout = layout
 
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port=8050, debug=True)
+    app.run_server(host='0.0.0.0', port=8050, debug=True, proxy="http://0.0.0.0:8050::http://175.45.182.38:8050")
