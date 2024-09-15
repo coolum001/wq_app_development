@@ -1,0 +1,17 @@
+To set the environment:
+
+ source ECO_DonC/environments/dash_map_01_env/bin/activate
+
+To run the water quality app, go to:
+  /home/owner/ECO_DonC/wq_app_development
+  gunicorn -w 4 main:server -b 0.0.0.0:8050
+
+To have the app running after you log out
+
+   nohup gunicorn -w 4 main:server -b 0.0.0.0:8050 &
+
+then go to a web browser http://maps.ecollaboration.org.au/
+
+To see the process listening on 8050
+
+netstat -tulpn | grep 8050
