@@ -1,0 +1,16 @@
+(dash_map_01_env) owner@ECO-LA-01:~/ECO_DonC/wq_app_development/linux_configs$ cat /usr/share/nginx/html/custom_50x.html
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Service Unavailable</title>
+    </head>
+<body>
+<h1> Service not available</h1>
+<p>We are so busy doing great things for the environment, that we didn't
+notice the <i>ECOllaboration Community Water Monitoring Map</i> application is falling over.
+Rest assured, when we get back from the bush, we will prop it back up as soon as possible!
+</p>
+<p>Please contact admin@ecollaboration.org.au if this problem persists.</p>
+</body>
+</html>
