@@ -261,3 +261,35 @@ def get_map_figure(df_sites, selected_site_code=None, layout=None):
         fig.layout = layout
 
     return fig
+
+#end  get_map_figure
+
+def group_by_period(df: pd.DataFrame):
+    '''
+    group_by_period: assign a group integer to each row, which increments across big time gaps
+
+    assumes the date-time is stored in column ["date_time"]
+    time gap is half a year ~ 180 days
+    '''
+
+    group_no = 1
+    df['group'] = group_no
+
+    MAX_DAYS_GAP = 180  # ~ 6 months
+
+    for i, i_prev in zip(df.index[1:], df.index[0 : len(df) - 1]):
+
+        if (df.loc[i, "date_time"] - df.loc[i_prev, "date_time"]) > pd.Timedelta(
+            value=MAX_DAYS_GAP, unit='D'
+        ):
+            # have big gap in sample taken dates, so assign to a new group
+            group_no = group_no + 1
+            df.loc[i:, 'group'] = group_no
+        # end if
+    # end for
+
+    return None
+
+
+# end group_by_period
+

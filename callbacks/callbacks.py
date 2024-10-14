@@ -308,7 +308,7 @@ def callbacks(app):
 
                 if switch_bands:
                     fig.add_hline(
-                        y=np.percentile(df[parameter], 68),
+                        y=np.percentile(df[parameter], 84),
                         name="68% band (upper)",  # showlegend=True,
                         line={"color": "orange", "dash": "dash"},
                         layer="below",
@@ -316,7 +316,7 @@ def callbacks(app):
                         line_width=2,
                     )
                     fig.add_hline(
-                        y=np.percentile(df[parameter], 32),
+                        y=np.percentile(df[parameter], 16),
                         name="68% band (lower)",  # showlegend=True,
                         line={"color": "orange", "dash": "dashdot"},
                         layer="below",
@@ -448,7 +448,7 @@ def callbacks(app):
 
                     if switch_bands:
                         fig.add_hline(
-                            y=np.percentile(df_tmp[parameter], 68),
+                            y=np.percentile(df_tmp[parameter], 84),
                             row=i + 1,
                             col=1,
                             # label=dict(
@@ -465,7 +465,7 @@ def callbacks(app):
                             line_width=2,
                         )
                         fig.add_hline(
-                            y=np.percentile(df_tmp[parameter], 32),
+                            y=np.percentile(df_tmp[parameter], 16),
                             row=i + 1,
                             col=1,
                             # label=dict(
