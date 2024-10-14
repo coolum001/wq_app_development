@@ -291,7 +291,10 @@ def callbacks(app):
                         "xaxis": {"title": {"text": "Date"}},
                         "yaxis": {"title": {"text": c.metric_names[parameter]}},
                         "title": {
-                            "text": f"{c.metric_names[parameter]}<br>{site_code} - {site_name}",
+                            "text": f"{c.metric_names[parameter]}<br>{site_code} - {site_name}<BR>"
+                            + '<span style="font-size: 8px;">'
+                            + '(dotted line indicates > 180 days between readings,  '
+                            + 'due to either incomplete tests, unavailability of volunteer tester and/or access to creek site)</span>',
                             "x": 0.5,
                         },
                         "template": "simple_white",
@@ -428,10 +431,14 @@ def callbacks(app):
         else:
             # TODO: we can customise here by opening a pop-up window and choosing the graphic we want (with checkboxes) + the option of displaying horizontal lines.
 
-            fig = make_subplots(x_title="Date", rows=7, cols=1)
+            fig = make_subplots(x_title="Date", rows=7, cols=1, shared_xaxes=True)
 
             fig.update_layout(
-                title={"text": f"{site_code} - {site_name}", "x": 0.5},
+                title={"text": f"{site_code} - {site_name}<BR>"
+                    + '<span style="font-size: 8px;">'
+                    + '(dotted line indicates > 180 days between readings, '
+                    + 'due to either incomplete tests, unavailability of volunteer tester and/or access to creek site)</span>',
+                       "x": 0.5},
                 template="simple_white",
                 height=1600,
                 width=1000,
@@ -439,7 +446,7 @@ def callbacks(app):
 
             # Creation of a subplot for each parameter.
             for i, (parameter, parameter_name) in enumerate(c.metric_names.items()):
-                df_tmp = df.dropna(subset=parameter)
+                df_tmp = df.dropna(subset=parameter).copy(deep=True)
 
                 if len(df_tmp[parameter]) == 0:
                     fig.add_annotation(
@@ -461,11 +468,62 @@ def callbacks(app):
                             marker={"size": 8},
                             showlegend=False,
                             connectgaps=True,
+                            line=dict(
+                                dash='dot', color='#1f77b4'
+                            ),  # muted blue - default plotly color
                         ),
                         row=i + 1,
                         col=1,
                     )
-                    # TODO replace label calls below (commented out) with
+                    # looks for gaps in time that divide data into groups
+                    f.group_by_period(df_tmp)
+
+                    groups = df_tmp['group'].max()
+
+                    fig.append_trace(
+                        go.Scatter(
+                            x=df_tmp["date_time"],
+                            y=df_tmp[parameter],
+                            mode="lines+markers",
+                            marker={"size": 8},
+                            showlegend=False,
+                            connectgaps=True,
+                            line=dict(
+                                dash='dot', color='#1f77b4'
+                            ),  # muted blue - default plotly color
+                        ),
+                        row=i + 1,
+                        col=1,
+                    )
+                    # draw each group of data points as a unit with a solid line
+                    # so that readings seperated by a long period of time (>160 days)
+                    # are not connected by a solid line
+                    # we also suppressed the first point  (by [1:] in selection above by site code)
+                    # see https://coolum001.github.io/tsbn.html
+                    #
+                    #
+                    for group in range(1, groups + 1):
+                        fig.append_trace(
+                            go.Scatter(
+                                x=df_tmp[df_tmp["group"] == group]["date_time"],
+                                y=df_tmp[df_tmp["group"] == group][parameter],
+                                mode="lines",  # just draw lines, markers already done
+                                marker={"size": 8},
+                                showlegend=False,
+                                connectgaps=True,
+                                line={
+                                    'color': '#1f77b4'
+                                },  # muted blue - default plotly color
+                            ),
+                            row=i + 1,
+                            col=1,
+                        )
+                    # end for
+
+
+
+
+                    # replaced label calls below (commented out) with
                     # annotation_text, annotation_position parameters
                     # see: https://plotly.com/python/horizontal-vertical-shapes/
                     if switch_median:
@@ -546,6 +604,15 @@ def callbacks(app):
             )
             fig.update_layout(autosize=True)            
 
+            # make all subplots have x axis tick mark labels
+            fig.update_layout(
+                xaxis_showticklabels=True,
+                xaxis2_showticklabels=True,
+                xaxis3_showticklabels=True,
+                xaxis4_showticklabels=True,
+                xaxis5_showticklabels=True,
+                xaxis6_showticklabels=True,
+            )
 
             # Conversion of the figure into a HTML file.
             path = f"assets/{site_code}_site_sheet.html"
