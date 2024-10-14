@@ -154,9 +154,10 @@ def callbacks(app):
             ].to_numpy()[0]
 
             # Retrieving water testing results for the selected site.
+            # ignore first reading as usually big gap to next
             df = df_water_testing_results[
                 df_water_testing_results["site_code"] == site_code
-            ]
+            ][1:]
 
             # Deletion of dataframe rows for which there are no values for the selected parameter.
             df = df.dropna(subset=parameter)
@@ -268,6 +269,8 @@ def callbacks(app):
                     wtr_indice = []
 
                 # Creation of the new graph figure.
+                # draw underlying line as dotted line, then segments with <160 days between reading as solid
+                # so long periods of time (>160 days) between readings shown as dotted
                 fig = go.Figure(
                     data=go.Scatter(
                         x=df["date_time"],
@@ -282,6 +285,7 @@ def callbacks(app):
                         selectedpoints=wtr_indice,
                         showlegend=False,
                         connectgaps=True,
+                        line=dict(dash='dot'),
                     ),
                     layout={
                         "xaxis": {"title": {"text": "Date"}},
@@ -294,6 +298,41 @@ def callbacks(app):
                         "clickmode": "event+select",
                     },
                 )
+
+                # looks for gaps in time that divide data into groups
+                f.group_by_period(df)
+
+                groups = df['group'].max()
+
+                #
+                # draw each group of data points as a unit with a solid line
+                # so that readings seperated by a long period of time (>160 days)
+                # are not connected by a solid line
+                # we also suppressed the first point  (by [1:] in selection above by site code)
+                # see https://coolum001.github.io/tsbn.html
+                #
+                #
+                for group in range(1, groups + 1):
+                    fig.add_trace(
+                        go.Scatter(
+                            x=df[df["group"] == group]["date_time"],
+                            y=df[df["group"] == group][parameter],
+                            customdata=df[df["group"] == group].index,
+                            hovertemplate="%{x}<br>%{y}"
+                            + c.metric_units[parameter]
+                            + "<extra></extra>",
+                            mode="lines",  # just draw lines, no markers, so clicking on marker is defined by dotted line plot above
+                            marker={"size": 8},
+                            selected_marker={"color": "red"},
+                            selectedpoints=wtr_indice,
+                            showlegend=False,
+                            connectgaps=True,
+                            line={
+                                'color': '#1f77b4'
+                            },  # muted blue - default plotly color
+                        ),
+                    )
+                # end for
 
                 # Addition of indicative lines to the graph figure if switches are selected.
                 if switch_median:
@@ -379,7 +418,7 @@ def callbacks(app):
         # Retrieving water testing results for the selected site.
         df = df_water_testing_results[
             df_water_testing_results["site_code"] == site_code
-        ]
+        ][1:]  # ignore first reading as usually big gap to next readings
 
         # Creation of the raw data CSV file or site sheet based on the button clicked.
         if ctx.triggered_id == "button-dl-raw-data":
