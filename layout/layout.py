@@ -132,5 +132,16 @@ def layout():
                 ])
             ], width=2)
 
-        ])
+        ]),
+        dbc.Row(
+                [
+                    html.Hr(),
+                    html.P(
+                        "Copyright 2024 ECOllaboration | All Rights Reserved",
+                        style={"font-size": "x-small"},
+                    ),
+                ]
+        ),
+
+
     ], fluid=True)
