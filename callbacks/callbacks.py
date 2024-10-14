@@ -485,11 +485,32 @@ def callbacks(app):
 
                     fig.update_yaxes(title_text=parameter_name, row=i + 1, col=1)
 
-            # # Conversion of the figure into a PDF file.
+            # Add image contain ecollaboration logo at top left of site sheet
+
+            from PIL import Image
+
+            img = Image.open('assets/eco-logo.jpg')
+
+            fig.add_layout_image(
+                dict(
+                    source=img,
+                    xref="paper",
+                    yref="paper",
+                    x=0.0,
+                    y=1.05,
+                    sizex=0.15,
+                    sizey=0.05,
+                    xanchor="left",
+                    yanchor="top",
+                    opacity=0.8,
+                )
+            )
+            fig.update_layout(autosize=True)            
+
+
             # Conversion of the figure into a HTML file.
-            # path = f"assets/{site_code}_site_sheet.pdf"
             path = f"assets/{site_code}_site_sheet.html"
-            # fig.write_image(path, format="pdf")
+            
             fig.write_html(
                 path,
             )
