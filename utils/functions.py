@@ -1,5 +1,6 @@
 from plotly import graph_objects as go
 import pandas as pd
+import numpy as np
 
 # import pyodbc
 import re
@@ -293,3 +294,36 @@ def group_by_period(df: pd.DataFrame):
 
 # end group_by_period
 
+def drop_outliers(df, parameter):
+    '''
+    drop_outliers: drop rows that have an outlier value for parameter
+
+    assumes df is a pandas dataframe, and the array of interest is df[parameter]
+
+    Returns:
+    None
+
+    Side Effects: may drop rows from dataframe
+
+    '''
+
+    # filter out exterme values from plot
+    # parameter is set to column name of physical quantity currently being processed
+    EXTREME = 5
+    TOO_SMALL = 0.1
+    avg = df[parameter].median()
+    std = df[parameter].std()
+
+    # if std is not too small (eg salinity all zero) remove outliers
+    if std > TOO_SMALL:
+        for i, v in zip(df.index, df[parameter]):
+            delta = np.abs(v - avg) / std
+            if delta > EXTREME:
+                # drop the row, so it wont be added to line plot
+                df.drop(index=i, inplace=True)
+            # end if
+        # end for
+    # end if
+
+
+# end drop_outliers

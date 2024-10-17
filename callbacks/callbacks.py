@@ -267,6 +267,10 @@ def callbacks(app):
                     ]
                 else:
                     wtr_indice = []
+		#end if
+
+                # drop rows with outlier value for parameter , to supress plotting
+                f.drop_outliers(df, parameter)
 
                 # Creation of the new graph figure.
                 # draw underlying line as dotted line, then segments with <160 days between reading as solid
@@ -447,6 +451,9 @@ def callbacks(app):
             # Creation of a subplot for each parameter.
             for i, (parameter, parameter_name) in enumerate(c.metric_names.items()):
                 df_tmp = df.dropna(subset=parameter).copy(deep=True)
+
+                # drop rows that have an outlier value for parameter
+                f.drop_outliers(df_tmp, parameter)
 
                 if len(df_tmp[parameter]) == 0:
                     fig.add_annotation(
