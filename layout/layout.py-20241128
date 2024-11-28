@@ -84,52 +84,16 @@ def layout():
                             className='mb-2'
                         ),
                         dbc.Checklist(
-                            options=[
-                            #{'label': 'Median', 'value': 1}
-                                                    {
-                                                        'label': html.Span(
-                                                            "Median",
-                                                            id="tooltip-target1",
-                                                            style={
-                                                                "textDecoration": "underline",
-                                                                "cursor": "pointer",
-                                                            },
-                                                        ),
-                                                        'value': 1,
-                                                    }
-                            ],
+                            options=[{'label': 'Median', 'value': 1}],
                             value=[],
                             id='switch-median',
                             switch=True,
                         ),
-                        dbc.Tooltip(
-                                                "Median: approximately half of readings will be above median line, half below"
-                                                " (excluding outliers)",
-                                                target='tooltip-target1',
-                                            ),
                         dbc.Checklist(
-                            options=[
-                            #{'label': '68% band', 'value': 1}
-                            {
-                                                        'label': html.Span(
-                                                            "68% band",
-                                                            id="tooltip-target2",
-                                                            style={
-                                                                "textDecoration": "underline",
-                                                                "cursor": "pointer",
-                                                            },
-                                                        ),
-                                                        'value': 1,
-                            }
-                            ],
+                            options=[{'label': '68% band', 'value': 1}],
                             value=[],
                             id='switch-bands',
                             switch=True,
-                        ),
-                        dbc.Tooltip(
-                                                "68% band: approximately 68% of readings will be between these two lines"
-                                                " (excluding outliers)",
-                                                target='tooltip-target2',
                         ),
                         html.Hr(),
                         html.Div([
