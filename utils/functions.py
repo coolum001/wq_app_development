@@ -130,11 +130,33 @@ def get_water_testing_results():
     # Deletion of measurement points without a site or date.
     df = df.dropna(subset=["site_code", "date_time"])
 
+    # drop rows with bad dates or times (known prob as at 20041129)
+    # Pandas will set value to NaT (not a time) on failure to parse
+    df["date_check"] = pd.to_datetime(
+        df['date_time'],
+        errors="coerce",
+        dayfirst=True,
+    )
+    df = df.dropna(subset=["date_check"])
+
+    df["time_check"] = pd.to_datetime(
+        df['time_tmp'],
+        errors="coerce",
+        dayfirst=True,
+    )
+    df = df.dropna(subset=["time_check"])
+
+    # drop rows with dates in the future (known prob as at 20041129)
+    df = df[df["date_check"] <= pd.Timestamp.today()].copy()
+
+    # drop rows with dates before 2000 (known prob as at 20041129)
+    df = df[df["date_check"] > pd.Timestamp(year=2000, month=1, day=1)].copy()
+
     # Grouping date and time columns.
     df["date_time"] = pd.to_datetime(
-        df.date_time.dt.date.astype(str)
+        df.date_check.dt.date.astype(str)
         + " "
-        + df.time_tmp.fillna(pd.Timestamp(0)).dt.time.astype(str)
+        + df.time_check.fillna(pd.Timestamp(0)).dt.time.astype(str)
     )
     df = df.drop(columns=["time_tmp"])
 
@@ -212,6 +234,9 @@ def get_sites(df_water_testing_results):
     # Conversion of latitude and longitude into floating values.
     df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
     df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
+
+    # correct positive latitude
+    df["latitude"] = -df["latitude"].abs()
 
     # Deletion of points without latitude or longitude.
     df = df.dropna(subset=["latitude", "longitude"])
