@@ -169,6 +169,26 @@ def get_water_testing_results():
     sites_ok = nb_row[nb_row > 3].index.tolist()
     df = df[df["site_code"].isin(sites_ok)]
 
+    # Selection of sites with >= 365 days between first and last reading
+    # this could be a list comprehension, but clearer I feel as an append loop
+    sites_ok = []
+    for site in sorted(df["site_code"].unique()):
+        d1 = df[df["site_code"] == site]["date_time"].max()
+        d2 = df[df["site_code"] == site]["date_time"].min()
+        delta = d1 - d2
+        if delta.days >= 365:
+            sites_ok.append(site)
+        # end if
+    # end for
+
+    # as per email from Teveor Morrison Dec 2 2024, adding MTN105, MTN110 as exceptions to >365 days rule
+    # (used for public demonstration purposes) Currently (20250101), neither site has a lat/lon in sites table
+    sites_ok.append("MTN110")
+    sites_ok.append("MTN105")
+
+    # select out good sites
+    df = df[df["site_code"].isin(sites_ok)]
+
     # Deletion of duplicate letters at the beginning of descriptive words (C-Cold, L-Light, F-Flat, ...).
     df["air_temperature"] = [
         re.sub(r"^([A-Za-z])-\1", r"\1", str(x)) for x in df["air_temperature"]
