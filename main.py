@@ -4,7 +4,10 @@ from layout.layout import layout
 from utils.functions import set_dfs
 import dash_bootstrap_components as dbc
 
+
+
 import warnings
+
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -17,6 +20,9 @@ app = Dash(
     update_title=None,
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
 )
+
+# perform basic authentication
+# in nginx configuration
 
 server = app.server
 

@@ -5,6 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
+#  Security File
+security.txt
 
 # Distribution / packaging
 .Python
