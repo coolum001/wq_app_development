@@ -169,37 +169,15 @@ def layout():
             ], width=2)
 
         ]),
-        # footer with logos and copyright notice
         dbc.Row(
                 [
                     html.Hr(),
-                    dbc.Col(
-                        [
-                            html.Img(
-                                src=r'assets/eco-logo.jpg',
-                                alt='ECO Logo',
-                                style={'height': '82px', 'width': '180px'},
-                            ),
-                        ]
-                    ),
-                    dbc.Col(
-                        [
-                            html.P(
-                                    "Copyright 2024 ECOllaboration | All Rights Reserved",
-                                     style={"font-size": "x-small"},
-                                    ),
-                        ]
-                   ),
-                    dbc.Col(
-                        [
-                            html.Img(
-                                src=r'assets/scc-logo.png',
-                                alt='SCC Logo',
-                                style={'height': '82px', 'width': '180px'},
-                            ),
-                        ]
+                    html.P(
+                        "Copyright 2024 ECOllaboration | All Rights Reserved",
+                        style={"font-size": "x-small"},
                     ),
                 ]
         ),
+
 
     ], fluid=True)
