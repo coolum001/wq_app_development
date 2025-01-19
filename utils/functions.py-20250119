@@ -2,9 +2,6 @@ from plotly import graph_objects as go
 import pandas as pd
 import numpy as np
 
-# need html to build text in introductory container
-from dash import html
-
 # import pyodbc
 import re
 
@@ -375,69 +372,3 @@ def drop_outliers(df, parameter):
 
 
 # end drop_outliers
-
-# function tom return intrtoductory text as dash  objects
-
-def get_intro_text():
-    return [
-        html.H3("Overview"),
-        html.P(
-            '''
-                    Originally commencing in 1993 under ECOllaboration's prior organisational 
-                    name 'Maroochy Waterwatch', the water monitoring program has amassed a large 
-                   collection of water quality data from a range of locations 
-                   within the Maroochy River catchment.  Key subcatchments included in this 
-                   dataset derive from various sites along Petrie Creek, Paynter’s Creek, 
-                   Stumer’s Creek, Eudlo Creek, Cornmeal Creek, Maroochy River and many other 
-                   smaller connecting tributaries. In its 33rd consecutive year, 
-                   the water monitoring program is believed to be the longest ongoing 
-                   citizen science project in Queensland and is a testament to both our 
-                   past and present dedicated volunteer team, supported by the community 
-                   engagement team at ECOllaboration. 
-                   Digital records within this dataset stretch back to 2011 with archived 
-                   paper copies prior to this date yet to be processed into digital formats 
-                   but will be added in due course. 
-                   '''
-        ),
-        html.H3('Method'),
-        html.P(
-            '''
-                    Using ECOllaboration's set of 6 x Horiba U-52 multi probe analysers, 
-                   our trained volunteer community network tests up to 50 sites across the 
-                   Sunshine Coast each month. Citizen science data (including turbidity, 
-                   dissolved oxygen, and salinity levels) is collected, analysed and then 
-                   stored for assessment to assist with any initial concerns reported through 
-                   to Sunshine Coast Council relating to water quality conerns. Each water 
-                   monitoring kit is calibrated monthly to ensure data accuracy and all quality 
-                   assurance procedures have been developed in conjunction with the Department 
-                   of Environmental and Resource Management (DERM).
-                    '''
-        ),
-        html.H3('Acknowledgments '),
-        html.P(
-            '''
-                    This new interactive website has been produced as a private prototype model only, 
-                   pending public release in late 2025. Developed by volunteer Don Cameron (2024 
-                   ECOllaboration Water Monitoring Volunteer of the Year) in liaison with Trevor 
-                   Morrison (ECOllaboration Community Development Manager), the aim of this prototype 
-                   is to provide volunteers with interactive access to the large dataset. '''
-        ),
-        html.P(
-            '''
-                   A special acknowledgement to William Masson who, while undertaking his Cert I in 
-                   Conservation and Ecosystem Management, took the initiative to utilise his existing 
-                   data visualisation skills and begin the coding process for Don to later finalise.  
-                   We think this project is a wonderful example of volunteers, trainees and staff 
-                   working together for the benefit of our local community. '''
-        ),
-        html.P(
-            '''
-                   Volunteers are encouraged to provide feedback to Trevor at trevor@ecollaboration.org.au 
-                   for any data queries/missing sites etc. ECOllaboration would like to thank Don 
-                   Cameron for making this tool available, and to all of our volunteers for their 
-                   valuable contributions to this dataset. 
-                   Sunshine Coast Council proudly supports the water monitoring initiative through their grants program.
-                   '''
-        ),
-    ]
-# end get_intro_text

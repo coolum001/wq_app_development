@@ -9,25 +9,6 @@ import utils.functions as f
 
 
 def callbacks(app):
-
-    # callback to hide / show introductory text on button click
-    @app.callback(
-        Output('contents-container', 'children'), [Input('show_hide', 'n_clicks')]
-    )
-    def do_show_hide(n_clicks):
-        if n_clicks is None:
-            return f.get_intro_text()
-        # end if
-        if not (n_clicks % 2):
-            contents = f.get_intro_text()
-            return contents
-        else:
-            return ''
-        # end if
-
-    # end do_show_hide
-
-
     @app.callback(
         [
             Output("map", "figure"),

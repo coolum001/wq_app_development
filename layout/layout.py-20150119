@@ -10,17 +10,6 @@ def layout():
 
     return dbc.Container([
 
-        # button for hid/show on introductory text
-        html.Div(
-            [
-                html.Button('Introduction Hide/Show', id='show_hide'),
-                html.Div(id='contents-container'),
-           ]
-        ),
-        #
-        #
-        #
-
         dbc.Row([
 
             # # #  SITE INFO SECTION  # # #
