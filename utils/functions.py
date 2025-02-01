@@ -427,6 +427,8 @@ def get_intro_text():
                    A special acknowledgement to William Masson who, while undertaking his Cert I in 
                    Conservation and Ecosystem Management, took the initiative to utilise his existing 
                    data visualisation skills and begin the coding process for Don to later finalise.  
+                   ECOllaboration also wishes to thank Thomas Klinger, who has volunteered his time 
+                   for many years entering the data each month into our large digital database.
                    We think this project is a wonderful example of volunteers, trainees and staff 
                    working together for the benefit of our local community. '''
         ),
