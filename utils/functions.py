@@ -267,6 +267,10 @@ def get_sites(df_water_testing_results):
     # We only keep sites for which we have water testing results.
     df = df[df["site_code"].isin(df_water_testing_results["site_code"])]
 
+    # some sites may have missing waterway - set to "Not Set"
+    df['waterway'] = df['waterway'].replace(np.nan, 'Not Set')
+
+
     df = df.sort_values("site_code").reset_index(drop=True)
 
     return df
