@@ -445,5 +445,14 @@ def get_intro_text():
                    Sunshine Coast Council proudly supports the water monitoring initiative through their grants program.
                    '''
         ),
+        html.P(
+            '''
+                    This data is provided for general informational purposes only
+                    and should not be relied upon as accurate, complete, or current. 
+                    No liability is accepted by ECOllaboration Ltd. 
+                    for any loss or damage arising in connection with the use of this data.
+            '''
+        ),
+
     ]
 # end get_intro_text
