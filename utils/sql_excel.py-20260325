@@ -4,69 +4,6 @@ import pandas as pd
 import datetime
 
 
-#  add functions to perform ad hoc repair to  correct 
-#  errors  in database.  These may be corrected at some later time
-#   but  performing these corrections will  be harmless
-
-def adhoc_sites_repair(df):
-    """
-    adhoc_sites_repair: One off function to fix error in database table sites
-
-    Parameters:
-    df: pandas dataframe holding sites data, with columns 'site_code', 'latitude', 'longitude' 'waterway'
-
-    Returns:
-    update dataframe with corrected latitudes and longitudes for sites PAY220, PAY600, WHA390, EUD585
-    corrected waterway for sites with site code starting with 'WHA'
-
-    Notes:  this function should NOT cause problems if these fixes are no longer needed
-
-    """
-
-    df['latitude'] = df['latitude'].where(df['site_code'] != 'PAY220', -26.685945)
-    df['longitude'] = df['longitude'].where(df['site_code'] != 'PAY220', 152.949373)
-
-    df['latitude'] = df['latitude'].where(df['site_code'] != 'PAY600', -26.646699)
-    df['longitude'] = df['longitude'].where(df['site_code'] != 'PAY600', 152.983393)
-
-    df['latitude'] = df['latitude'].where(df['site_code'] != 'WHA390', -26.630176)
-    df['longitude'] = df['longitude'].where(df['site_code'] != 'WHA390', 152.9544)
-
-    df['latitude'] = df['latitude'].where(df['site_code'] != 'EUD585', -26.665079)
-    df['longitude'] = df['longitude'].where(df['site_code'] != 'EUD585', 153.012656)
-
-    df['waterway'] = df['waterway'].where(
-        df['site_code'].str[0:3] != 'WHA', "Whalley Creek"
-    )
-
-    return df
-
-
-# end adhoc_sites_repair
-
-
-def adhoc_results_repair(df):
-    """
-    adhoc_results_repair: One off function to fix error in database table results
-
-    Parameters:
-    df: pandas dataframe holding results data, with columns 'site_code',
-
-    Returns:
-    update dataframe with WHA548 site codes to WHA390 in all places they occur
-
-
-    Notes:  this function should NOT cause problems if these fixes are no longer needed
-
-    """
-
-    df['site_code'] = df['site_code'].where(df['site_code'] != 'WHA548', 'WHA390')
-
-    return df
-
-
-# end adhoc_results_repair
-
 def read_results_from_excel():
     URL = "utils/data/waterqualityspreadsheet.xlsx"
 
@@ -150,9 +87,6 @@ def read_results_from_excel():
     ]
     return df
 
-    # fix know defects in database results table
-    df = adhoc_results_repair(df)
-
 
 # end read_results_from_excel
 
@@ -192,10 +126,6 @@ def read_sites_from_excel():
     df = df.rename(
         columns=rename_dict,
     )
-
-    # fix errors in sites datatable
-
-    df = adhoc_sites_repair(df)
 
     return df
 
