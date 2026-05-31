@@ -3,10 +3,10 @@ import pandas as pd
 # import pyodbc
 import datetime
 
-
-#  add functions to perform ad hoc repair to  correct 
+#  add functions to perform ad hoc repair to  correct
 #  errors  in database.  These may be corrected at some later time
 #   but  performing these corrections will  be harmless
+
 
 def adhoc_sites_repair(df):
     """
@@ -62,10 +62,18 @@ def adhoc_results_repair(df):
 
     df['site_code'] = df['site_code'].where(df['site_code'] != 'WHA548', 'WHA390')
 
+    # "I agree with your judgement that all readings should be removed prior to 2018 to ensure data maintains overall credibility. ""
+    # T Morrison email Apr 10, 2026,
+
+    df["dissolved_oxygen_percentage"] = df["dissolved_oxygen_percentage"].where(
+        df["date_time"] > pd.Timestamp(year=2018, month=1, day=1), 0.0
+    )
+
     return df
 
 
 # end adhoc_results_repair
+
 
 def read_results_from_excel():
     URL = "utils/data/waterqualityspreadsheet.xlsx"
@@ -148,10 +156,11 @@ def read_results_from_excel():
         )
         for x in df['time_tmp']
     ]
-    return df
 
     # fix know defects in database results table
     df = adhoc_results_repair(df)
+
+    return df
 
 
 # end read_results_from_excel

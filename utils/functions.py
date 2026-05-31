@@ -252,7 +252,10 @@ def get_sites(df_water_testing_results):
     # cnxn.close()
 
     # df = get_sites_sql()
+
     df = read_sites_from_excel()
+
+    # print("After Excel read\n", df[df["site_code"] == "WHA390"])
 
     # Conversion of latitude and longitude into floating values.
     df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
@@ -264,14 +267,19 @@ def get_sites(df_water_testing_results):
     # Deletion of points without latitude or longitude.
     df = df.dropna(subset=["latitude", "longitude"])
 
+    # print("After Lat Lon purge\n", df[df["site_code"] == "WHA390"])
+
     # We only keep sites for which we have water testing results.
     df = df[df["site_code"].isin(df_water_testing_results["site_code"])]
+
+    # print("After no readings purge\n", df[df["site_code"] == "WHA390"])
+
+    df = df.sort_values("site_code").reset_index(drop=True)
 
     # some sites may have missing waterway - set to "Not Set"
     df['waterway'] = df['waterway'].replace(np.nan, 'Not Set')
 
-
-    df = df.sort_values("site_code").reset_index(drop=True)
+    # print(" Return from get_sites\n", df["site_code"])
 
     return df
 
@@ -315,7 +323,9 @@ def get_map_figure(df_sites, selected_site_code=None, layout=None):
 
     return fig
 
-#end  get_map_figure
+
+# end  get_map_figure
+
 
 def group_by_period(df: pd.DataFrame):
     '''
@@ -345,6 +355,7 @@ def group_by_period(df: pd.DataFrame):
 
 
 # end group_by_period
+
 
 def drop_outliers(df, parameter):
     '''
@@ -382,11 +393,11 @@ def drop_outliers(df, parameter):
 
 # function tom return intrtoductory text as dash  objects
 
+
 def get_intro_text():
     return [
         html.H3("Overview"),
-        html.P(
-            '''
+        html.P('''
                     Originally commencing in 1993 under ECOllaboration's prior organisational 
                     name 'Maroochy Waterwatch', the water monitoring program has amassed a large 
                    collection of water quality data from a range of locations 
@@ -401,11 +412,9 @@ def get_intro_text():
                    Digital records within this dataset stretch back to 2011 with archived 
                    paper copies prior to this date yet to be processed into digital formats 
                    but will be added in due course. 
-                   '''
-        ),
+                   '''),
         html.H3('Method'),
-        html.P(
-            '''
+        html.P('''
                     Using ECOllaboration's set of 6 x Horiba U-52 multi probe analysers, 
                    our trained volunteer community network tests up to 50 sites across the 
                    Sunshine Coast each month. Citizen science data (including turbidity, 
@@ -415,44 +424,51 @@ def get_intro_text():
                    monitoring kit is calibrated monthly to ensure data accuracy and all quality 
                    assurance procedures have been developed in conjunction with the Department 
                    of Environmental and Resource Management (DERM).
-                    '''
-        ),
+                    '''),
+        html.P("""
+                    Trend analysis (if requested) uses the Mann-Kendall (MK) test  to statistically assess if there 
+                    is a monotonic upward or downward trend of the variable of interest over time.  
+                    The trend analysis of this app is best viewed as supporting exploratory analysis, 
+                    used to identify sites where changes are significant or of large magnitude. 
+                    The illustrative trend line is calculated
+                    using Theil–Sen regression, a method less sensitive to outliers. 
+                    All data from this subset should be used as educational and exploratory in context, 
+                    rather than a definitive conclusion relating to stream health.  
+                    Ecollaboration is not liable for how users may interpret this data, 
+                    including the trend analysis supplied, and is not liable for the accuracy 
+                    of the citizen science dataset.
+            """),
         html.H3('Acknowledgments '),
         html.P(
             '''
                     This new interactive website has been produced as a private prototype model only, 
-                   pending public release in late 2025. Developed by volunteer Don Cameron (2024 
+                   pending public release. Developed by volunteer Don Cameron (2024 
                    ECOllaboration Water Monitoring Volunteer of the Year) in liaison with Trevor 
                    Morrison (ECOllaboration Community Development Manager), the aim of this prototype 
                    is to provide volunteers with interactive access to the large dataset. '''
         ),
-        html.P(
-            '''
+        html.P('''
                    A special acknowledgement to William Masson who, while undertaking his Cert I in 
                    Conservation and Ecosystem Management, took the initiative to utilise his existing 
                    data visualisation skills and begin the coding process for Don to later finalise.  
                    ECOllaboration also wishes to thank Thomas Klinger, who has volunteered his time 
                    for many years entering the data each month into our large digital database.
                    We think this project is a wonderful example of volunteers, trainees and staff 
-                   working together for the benefit of our local community. '''
-        ),
-        html.P(
-            '''
+                   working together for the benefit of our local community. '''),
+        html.P('''
                    Volunteers are encouraged to provide feedback to Trevor at trevor@ecollaboration.org.au 
                    for any data queries/missing sites etc. ECOllaboration would like to thank Don 
                    Cameron for making this tool available, and to all of our volunteers for their 
                    valuable contributions to this dataset. 
                    Sunshine Coast Council proudly supports the water monitoring initiative through their grants program.
-                   '''
-        ),
-        html.P(
-            '''
+                   '''),
+        html.P('''
                     This data is provided for general informational purposes only
                     and should not be relied upon as accurate, complete, or current. 
                     No liability is accepted by ECOllaboration Ltd. 
                     for any loss or damage arising in connection with the use of this data.
-            '''
-        ),
-
+            '''),
     ]
+
+
 # end get_intro_text
