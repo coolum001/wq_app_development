@@ -3,9 +3,15 @@ from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 import dash_bootstrap_components as dbc
 import numpy as np
+import pandas as pd
 import os.path
 import utils.constants as c
 import utils.functions as f
+import utils.pymannkendall as mk
+from scipy import stats
+
+# set True if trend analysis is requested, and a trend is found
+trend_found = False
 
 
 def callbacks(app):
@@ -26,7 +32,6 @@ def callbacks(app):
         # end if
 
     # end do_show_hide
-
 
     @app.callback(
         [
@@ -134,6 +139,7 @@ def callbacks(app):
             Input("dropdown-parameter", "value"),
             Input("switch-median", "value"),
             Input("switch-bands", "value"),
+            Input("switch-trend", "value"),
         ],
         [
             State({"type": "graph", "index": ALL}, "clickData"),
@@ -147,12 +153,14 @@ def callbacks(app):
         parameter,
         switch_median,
         switch_bands,
+        switch_trend,
         clicked_wtr,
         last_selected_wtr,
     ):
         """
         TODO
         """
+        global trend_found
 
         graph = c.msg_no_graph
         wtr_info_content = c.msg_no_point  # wtr = Water Testing Result
@@ -180,6 +188,16 @@ def callbacks(app):
 
             # Deletion of dataframe rows for which there are no values for the selected parameter.
             df = df.dropna(subset=parameter)
+
+            # in function adhoc_results_repair, we set to zero all Dis Oxy % data values with a date before 2018/1/1,
+            # as these are artefacts of the database and not real readings.
+            # later when we do trend analysis, we discard any initial run of zero values for Dis Oxy %
+            # At this point we wish to supress plotting of these zero values, so we drop them from the dataframe.
+            #
+            # Remove all Dissolved Oxygen % data points from before 2018
+            if parameter == "dissolved_oxygen_percentage":
+                df = df[df['date_time'] >= pd.Timestamp(year=2018, month=1, day=1)]
+            # end if
 
             if len(df[parameter]) == 0:
                 graph = c.msg_no_values
@@ -286,7 +304,85 @@ def callbacks(app):
                     ]
                 else:
                     wtr_indice = []
-		#end if
+                # end if
+
+                # we perform robust non-parametic trend analysis BEFORE dropping outliers
+                # but see discussion on dissolved oxygen % below
+
+                # set text to appear in title relating to trends
+                if not switch_trend:
+
+                    # user doesnt want trend analysis, so supress text
+                    trend_text = ""
+                else:
+                    # trend analysis requested
+
+                    # The Mann-Kendall test requires a minimum of 3 to 4 data points to calculate the statistic,
+                    # but it is generally recommended to have at least 8 to 10 measurements for reliable results.
+                    # explain to user asking for trend analysis that there isnt enough data
+
+                    # we special case "dissolved_oxygen_percentage".  the database has runs of zeros
+                    # for some initial period for many sites.  We discard these
+                    #
+                    if parameter == "dissolved_oxygen_percentage":
+                        # count length of zero run (if any)
+                        discard_count = 0
+                        for value in df[parameter].values:
+                            if (
+                                value < 0.01
+                            ):  # we use a small threshold rather than zero to allow for any small measurement errors,
+                                # and to avoid discarding any real readings that are very low but not exactly zero
+                                discard_count += 1
+                            else:
+                                break
+                            # end if
+                        # end for
+                    else:
+                        discard_count = 0
+                    # end if
+
+                    if switch_trend and (
+                        (len(df[parameter].values) - discard_count) < 10
+                    ):
+                        trend_text = "Trend: insufficient data for analysis<br>"
+                        trend_found = False
+                    else:
+                        alpha = 0.005  # required confidence
+                        # get float values for analysis
+
+                        trend_data = [float(z) for z in df[parameter].values]
+                        r_mk = mk.original_test(trend_data[discard_count:], alpha=alpha)
+                        # r_mk[0] holds the text assessment of trend analysis
+                        # if we get a trend, we show P value
+                        if r_mk[1]:
+                            trend_found = True
+                            trend_text = (
+                                "Trend: "
+                                + r_mk[0]
+                                + f"(prob. random chance = {r_mk[2]:.3})<br>"
+                            )
+                            # now perform senn regression on all the data points (excxept discarded
+                            # initial zeros for dissolved oxygen percentage)
+                            # to get the slope and intercept of the trend line to plot on graph
+                            # refer to
+                            # https://scikit-learn.org/stable/auto_examples/linear_model/plot_theilsen.html
+
+                            trend_dt = [float(z) for z in df["date_time"].values]
+                            result = stats.theilslopes(
+                                trend_data[discard_count:],
+                                trend_dt[discard_count:],
+                                alpha=alpha,
+                            )
+                            senn_slope = result[0]
+                            senn_intercept = result[1]
+
+                        else:
+                            # no trend (at required confidence level), so no P to report
+                            trend_found = False
+                            trend_text = "Trend: " + r_mk[0] + "<br>"
+                        # end if
+                    # end if
+                # end if
 
                 # drop rows with outlier value for parameter , to supress plotting
                 f.drop_outliers(df, parameter)
@@ -315,9 +411,10 @@ def callbacks(app):
                         "yaxis": {"title": {"text": c.metric_names[parameter]}},
                         "title": {
                             "text": f"{c.metric_names[parameter]}<br>{site_code} - {site_name}<BR>"
+                            + f'<span style="font-size: 14px;">{trend_text}</span>'
                             + '<span style="font-size: 8px;">'
                             + '(dotted line indicates > 180 days between readings,  '
-                            + 'due to either incomplete tests, unavailability of volunteer tester and/or access to creek site)</span>',
+                            + 'due to either incomplete tests, unavailability of volunteer tester and/or access to creek site)<br></span>',
                             "x": 0.5,
                         },
                         "template": "simple_white",
@@ -389,6 +486,35 @@ def callbacks(app):
                         line_width=2,
                     )
 
+                if switch_trend:
+                    if trend_found:
+                        # compute the senn regression prediction for the outlier-pruned
+                        # date_time values
+                        y2 = [
+                            result[0] * float(dt) + result[1]
+                            for dt in df["date_time"].values
+                        ]
+
+                        fig.add_trace(
+                            go.Scatter(
+                                x=df["date_time"],
+                                y=y2,
+                                customdata=df.index,
+                                hovertemplate="%{x}<br>%{y}"
+                                + c.metric_units[parameter]
+                                + "<extra></extra>",
+                                mode="lines",  # just draw lines, no markers, so clicking on marker is defined by dotted line plot above
+                                marker={"size": 8},
+                                selected_marker={"color": "red"},
+                                selectedpoints=wtr_indice,
+                                showlegend=False,
+                                connectgaps=True,
+                                line={'color': "#eb0e0e"},  # red trend line
+                            ),
+                        )
+                    # end if
+                # end if
+
                 # Creation of the graph from the figure.
                 graph = dcc.Graph(
                     id={"type": "graph", "index": "graph"},
@@ -444,7 +570,9 @@ def callbacks(app):
         # Retrieving water testing results for the selected site.
         df = df_water_testing_results[
             df_water_testing_results["site_code"] == site_code
-        ][1:]  # ignore first reading as usually big gap to next readings
+        ][
+            1:
+        ]  # ignore first reading as usually big gap to next readings
 
         # Creation of the raw data CSV file or site sheet based on the button clicked.
         if ctx.triggered_id == "button-dl-raw-data":
@@ -457,11 +585,13 @@ def callbacks(app):
             fig = make_subplots(x_title="Date", rows=7, cols=1, shared_xaxes=True)
 
             fig.update_layout(
-                title={"text": f"{site_code} - {site_name}<BR>"
+                title={
+                    "text": f"{site_code} - {site_name}<BR>"
                     + '<span style="font-size: 8px;">'
                     + '(dotted line indicates > 180 days between readings, '
                     + 'due to either incomplete tests, unavailability of volunteer tester and/or access to creek site)</span>',
-                       "x": 0.5},
+                    "x": 0.5,
+                },
                 template="simple_white",
                 height=1600,
                 width=1000,
@@ -473,6 +603,18 @@ def callbacks(app):
 
                 # drop rows that have an outlier value for parameter
                 f.drop_outliers(df_tmp, parameter)
+
+                # in function adhoc_results_repair, we set to zero all Dis Oxy % data values with a date before 2018/1/1,
+                # as these are artefacts of the database and not real readings.
+                # later when we do trend analysis, we discard any initial run of zero values for Dis Oxy %
+                # At this point we wish to supress plotting of these zero values, so we drop them from the dataframe.
+                #
+                # Remove all Dissolved Oxygen % data points from before 2018
+                if parameter == "dissolved_oxygen_percentage":
+                    df_tmp = df_tmp[
+                        df_tmp['date_time'] >= pd.Timestamp(year=2018, month=1, day=1)
+                    ]
+                # end if
 
                 if len(df_tmp[parameter]) == 0:
                     fig.add_annotation(
@@ -545,9 +687,6 @@ def callbacks(app):
                             col=1,
                         )
                     # end for
-
-
-
 
                     # replaced label calls below (commented out) with
                     # annotation_text, annotation_position parameters
@@ -628,7 +767,7 @@ def callbacks(app):
                     opacity=0.8,
                 )
             )
-            fig.update_layout(autosize=True)            
+            fig.update_layout(autosize=True)
 
             # make all subplots have x axis tick mark labels
             fig.update_layout(
@@ -642,7 +781,7 @@ def callbacks(app):
 
             # Conversion of the figure into a HTML file.
             path = f"assets/{site_code}_site_sheet.html"
-            
+
             fig.write_html(
                 path,
             )
