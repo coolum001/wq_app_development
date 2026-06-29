@@ -1,0 +1,13 @@
+map.service = current systemd config for map service
+map.service.old = previous snapshot of map service systemd config
+nginx_config.txt = current nginx config
+nginx_config.txt.old = previous snapshot of nginx config
+custom_50x.txt = current custom not found html page
+custom_50x.txt.old = previous snapshot of custom not found html page
+snapshot.sh = script to snapshot linux configuration files
+wq_app_requirements.txt = Python packages needed for Water Quality app
+nginx.config.no-basic-auth = historical nginx config
+nginx.config.basic-auth = historical nginx config (with password for access)
+nginx_config_ssl.txt = historical nginx config (first ssl or secure access config)
+gunicorn.txt = instruction on how to do manual testing
+

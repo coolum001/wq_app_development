@@ -9,7 +9,7 @@ Description=System service that runs the water quality map app on 8050
 After=network.target
 
 
-# limit how hard we try to restart failing service 
+# limit how hard we try to restart failing service
 # see https://ma.ttias.be/auto-restart-crashed-service-systemd/
 StartLimitIntervalSec=500
 StartLimitBurst=5
@@ -29,10 +29,13 @@ ExecStart=/home/owner/ECO_DonC/environments/dash_map_01_env/bin/gunicorn -w 4 ma
 StandardOutput=journal+console
 StandardError=journal+console
 
-# resatrt after failure - see 
+# resatrt after failure - see
 Restart=on-failure
+
+
 
 [Install]
 # tell systemd to start when the regular multi-user system is up and running:
 
 WantedBy=multi-user.target
+
