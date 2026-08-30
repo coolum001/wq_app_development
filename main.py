@@ -16,7 +16,7 @@ set_dfs()
 
 app = Dash(
     __name__,
-    title="Water monitoring",
+    title="Ecollaboration Water Quality Citizen Science Database",
     update_title=None,
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
 )

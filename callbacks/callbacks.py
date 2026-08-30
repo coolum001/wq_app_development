@@ -11,7 +11,7 @@ import utils.pymannkendall as mk
 from scipy import stats
 
 # set True if trend analysis is requested, and a trend is found
-trend_found = False
+# trend_found = False
 
 
 def callbacks(app):
@@ -160,7 +160,7 @@ def callbacks(app):
         """
         TODO
         """
-        global trend_found
+        # global trend_found
 
         graph = c.msg_no_graph
         wtr_info_content = c.msg_no_point  # wtr = Water Testing Result
@@ -471,7 +471,7 @@ def callbacks(app):
                 if switch_bands:
                     fig.add_hline(
                         y=np.percentile(df[parameter], 84),
-                        name="68% band (upper)",  # showlegend=True,
+                        name="70% band (upper)",  # showlegend=True,
                         line={"color": "orange", "dash": "dash"},
                         layer="below",
                         opacity=1,
@@ -479,7 +479,7 @@ def callbacks(app):
                     )
                     fig.add_hline(
                         y=np.percentile(df[parameter], 16),
-                        name="68% band (lower)",  # showlegend=True,
+                        name="70% band (lower)",  # showlegend=True,
                         line={"color": "orange", "dash": "dashdot"},
                         layer="below",
                         opacity=1,
@@ -718,7 +718,7 @@ def callbacks(app):
                             #    textposition="end",
                             #    font_color="orange",
                             # ),
-                            annotation_text="68% band (upper)",
+                            annotation_text="70% band (upper)",
                             annotation_position='top left',
                             annotation_font_color='orange',
                             line={"color": "orange", "dash": "dash"},
@@ -735,7 +735,7 @@ def callbacks(app):
                             #    textposition="end",
                             #    font_color="orange",
                             # ),
-                            annotation_text="68% band (lower)",
+                            annotation_text="70% band (lower)",
                             annotation_position='bottom left',
                             annotation_font_color='orange',
                             line={"color": "orange", "dash": "dashdot"},

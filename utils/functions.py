@@ -414,6 +414,13 @@ def get_intro_text():
                    but will be added in due course. 
                    '''),
         html.H3('Method'),
+        html.P("""
+                    All water quality testing conducted by volunteers is governed by the 
+                    DES Monitoring and Sampling Manual. The Monitoring and Sampling Manual  
+                    provides the common techniques, methods and standards for sample collection, 
+                    handling, quality assurance and control, custodianship and 
+                    data management for use by Government agencies, relevant persons and other organisations.
+                """),
         html.P('''
                     Using ECOllaboration's set of 6 x Horiba U-52 multi probe analysers, 
                    our trained volunteer community network tests up to 50 sites across the 
@@ -438,10 +445,17 @@ def get_intro_text():
                     including the trend analysis supplied, and is not liable for the accuracy 
                     of the citizen science dataset.
             """),
+        html.P("""
+                    In the description that appears when a site is selected by clicking on the blue marker in the map, the term "Current" means 
+                    the site is currently being monitored, "Previous" means monitoring has been paused or stopped, but historical data
+                    is available. The "Waterbody" description is derived from "Environmental Protection Policy (Water) 2009, 
+                    Mapping procedural guide, Appendix A"
+
+               """),
         html.H3('Acknowledgments '),
         html.P(
             '''
-                    This new interactive website has been produced as a private prototype model only, 
+                    This new interactive draft website has been produced as a private prototype model only, 
                    pending public release. Developed by volunteer Don Cameron (2024 
                    ECOllaboration Water Monitoring Volunteer of the Year) in liaison with Trevor 
                    Morrison (ECOllaboration Community Development Manager), the aim of this prototype 

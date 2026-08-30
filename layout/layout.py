@@ -111,6 +111,10 @@ def layout():
                     # # #  MAP SECTION  # # #
                     dbc.Col(
                         [
+                            html.P(
+                                "Hover over a blue marker to see Site code, click on a blue Site marker to view water quality data",
+                                style={"fontSize": "10px"},
+                            ),
                             dcc.Graph(
                                 id='map',
                                 figure=f.get_map_figure(df_sites),
@@ -215,7 +219,7 @@ def layout():
                                                     # {'label': '68% band', 'value': 1}
                                                     {
                                                         'label': html.Span(
-                                                            "68% band",
+                                                            "Data range",
                                                             id="tooltip-target2",
                                                             style={
                                                                 "textDecoration": "underline",
@@ -230,7 +234,7 @@ def layout():
                                                 switch=True,
                                             ),
                                             dbc.Tooltip(
-                                                "68% band: approximately 68% of readings will be between these two lines"
+                                                "Data range: approximately 70% of readings will be between these two lines"
                                                 " (excluding outliers)",
                                                 target='tooltip-target2',
                                             ),
