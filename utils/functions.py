@@ -396,6 +396,20 @@ def drop_outliers(df, parameter):
 
 def get_intro_text():
     return [
+
+        html.Div(
+            [
+                html.H3("User Guide Video"),
+                html.Video(
+                    src="/assets/WQApp_EndUser_Guide.mp4",
+                    controls=True,
+                    # Default Web Embed
+                    width=640,
+                    height=360,
+                ),
+            ]
+        ),
+
         html.H3("Overview"),
         html.P('''
                     Originally commencing in 1993 under ECOllaboration's prior organisational 
