@@ -443,8 +443,9 @@ def get_intro_text():
                    stored for assessment to assist with any initial concerns reported through 
                    to Sunshine Coast Council relating to water quality conerns. Each water 
                    monitoring kit is calibrated monthly to ensure data accuracy and all quality 
-                   assurance procedures have been developed in conjunction with the Department 
-                   of Environmental and Resource Management (DERM).
+                   assurance procedures have been developed in conjunction with the 
+                   former Department of Environmental and Resource Management (DERM), 
+                   now  Department of the Environment, Tourism, Science and Innovation (DETSI).
                     '''),
         html.P("""
                     Trend analysis (if requested) uses the Mann-Kendall (MK) test  to statistically assess if there 
@@ -469,8 +470,7 @@ def get_intro_text():
         html.H3('Acknowledgments '),
         html.P(
             '''
-                    This new interactive draft website has been produced as a private prototype model only, 
-                   pending public release. Developed by volunteer Don Cameron (2024 
+                   Developed by volunteer Don Cameron (2024 
                    ECOllaboration Water Monitoring Volunteer of the Year) in liaison with Trevor 
                    Morrison (ECOllaboration Community Development Manager), the aim of this prototype 
                    is to provide volunteers with interactive access to the large dataset. '''
